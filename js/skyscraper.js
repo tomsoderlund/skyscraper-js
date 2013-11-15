@@ -1,41 +1,202 @@
 // From: https://gist.github.com/jonjaques/2897748
 
 var Skyscraper = Skyscraper || (Skyscraper = new Bookmarklet({
-// debug: true, // use debug to bust the cache on your resources
-css: ['/css/skyscraper.css'],
-js: [],
-// jqpath: '/my/jquery.js', // defaults to google cdn-hosted jquery
-ready: function(base) { // use base to expose a public method
-	base.init = function(){
+	// debug: true, // use debug to bust the cache on your resources
+	css: ['http://localhost:8000' + '/css/skyscraper.css'],
+	js: [],
+	// jqpath: '/my/jquery.js', // defaults to google cdn-hosted jquery
+	ready: function (base) { // use base to expose a public method
 
-		$('body').append('<div class="skyscraper-info-box">'
-			+ '<h3>Skyscraper</h3>'
-			+ '<ol class="skyscraper-list">'
-			+ '<li>Select a data table: <span class="select-slot" id="skyscraper-select-table">(select)</span></li>'
-			+ '<li>Select a data row: <span class="select-slot" id="skyscraper-select-row">(select)</span></li>'
-			+ '<li>Select a data fields: <span class="select-slot" id="skyscraper-select-fields">(select)</span></li>'
-			+ '<li>Click here to begin parsing!</li>'
-			+ '/<ol>'
-			+ '</div>');
+		var searchPattern = {
+			table: { tagName: null, id: null, classes: null },
+			rowTemplate: { tagName: null, id: null, classes: null },
+			fields: []
+		}
 
-		$('ul').not('.skyscraper-list').addClass('skyscraper-data-table');
-		$('ol').addClass('skyscraper-data-table');
 
-		$('.skyscraper-data-table').click(function(event) {
-			$(event.target).children('li').addClass('skyscraper-data-row');
-			$('#skyscraper-select-table').html(event.target.tagName + ': ' + event.target.id);
-			console.log(event.target);
-		});
+		var setInfoStep = function (stepNr) {
+			$('.skyscraper-info-box li').removeClass('active');
+			$('.skyscraper-info-box #step-' + stepNr).addClass('active');
+		}
 
-		$('.skyscraper-data-row').click(function(event) {
-			$('.skyscraper-data-table').unbind('click');
-			$('#skyscraper-select-row').html(event.target.tagName + ': ' + event.target.id);
-		});
+		var formatNiceName = function (element) {
+			var niceName = element.prop("tagName");
+			niceName += '[' + remoteSkyscraperClasses(element.attr('class')) + ']';
+			if (element.attr('id'))
+				niceName += '(' + element.attr('id') + ')';
+			return niceName;
+		}
 
+		var remoteSkyscraperClasses = function (classesStr) {
+			var classesArray = classesStr.split(' ');
+			var returnStr = "";
+			for (var c in classesArray) {
+				if (classesArray[c].indexOf('skyscraper') === -1) {
+					returnStr = classesArray[c] + ' ';
+				};
+			}
+			return returnStr.trim();
+		}
+
+		var setSearchPatternProperties = function (element, patternObject) {
+			patternObject.tagName = element.prop("tagName").toLowerCase();
+			if (element.attr('id'))
+				patternObject.id = element.attr('id');
+			patternObject.classes = remoteSkyscraperClasses(element.attr('class'));
+			//console.log('searchPattern:', searchPattern);
+		}
+
+		var smartFind = function (element, patternObject, useId) {
+			var searchStr = patternObject.tagName
+			if (patternObject.classes)
+				searchStr += '.' + patternObject.classes.split(' ')[0];
+			if (useId && patternObject.id)
+				searchStr += '#' + patternObject.id;
+			//console.log('searchPattern:', searchPattern);
+			console.log('smartFind:', searchStr)
+			return element.find(searchStr);
+		}
+
+		base.init = function () {
+
+			console.log('Skyscraper initializing...');
+
+			$('body').append('<div class="skyscraper-info-box">'
+				+ '<h3>Skyscraper</h3>'
+				+ '<ol class="skyscraper-list">'
+				+ '<li id="step-1">Select a data table: <span class="select-slot" id="skyscraper-select-table">select</span></li>'
+				+ '<li id="step-2">Select a template data row: <span class="select-slot" id="skyscraper-select-row">select</span></li>'
+				+ '<li id="step-3">Select data fields: <span class="select-slot" id="skyscraper-select-fields">select</span></li>'
+				+ '<li id="step-4">Click below to begin parsing:</li>'
+				+ '</ol>'
+				+ '<button type="button" id="skyscraper-start-button">Begin Parsing</button>'
+				+ '<textarea id="skyscraper-results"></textarea>'
+				+ '<a id="skyscraper-reset" href="#">Reset</a>'
+				+ '</div>');
+
+			$('ul').addClass('skyscraper-data-table');
+			$('ol').not('.skyscraper-list').addClass('skyscraper-data-table');
+			$('table').addClass('skyscraper-data-table');
+
+			// 1. Select Table
+			$('.skyscraper-data-table').click(function(event) {
+				//event.stopPropagation();
+				var element = $(event.target);
+				console.log('TABLE:', $(event.target));
+				element.addClass('skyscraper-selected');
+				element.find('.skyscraper-data-table').off('click');
+				element.find('.skyscraper-data-table').removeClass('skyscraper-data-table');
+				element.children('li').addClass('skyscraper-data-row');
+				element.children('tr').addClass('skyscraper-data-row');
+				element.children('tbody').children('tr').addClass('skyscraper-data-row');
+				$('#skyscraper-select-table').html(formatNiceName(element));
+				setSearchPatternProperties(element, searchPattern.table);
+				console.log(searchPattern);
+				setInfoStep(2);
+
+				// 2. Select Row Template
+				$('.skyscraper-data-row').click(function(event) {
+					event.stopPropagation();
+					var element = $(event.target);
+					console.log('ROW:', element, element.prop("tagName"));
+					if (element.prop("tagName") === 'TD') {
+						element = element.parent();
+					}
+					element.parent().children().removeClass('skyscraper-selected');
+					element.addClass('skyscraper-selected');
+					//$(event.target).parent().off('click', '.skyscraper-data-row');
+					element.removeClass('skyscraper-data-row');
+					// Remove links
+					element.find('*').click(function(e) {
+						e.preventDefault();
+					});
+					element.children().addClass('skyscraper-data-field');
+					$('#skyscraper-select-row').html(formatNiceName(element));
+					setSearchPatternProperties(element, searchPattern.rowTemplate);
+					setInfoStep(3);
+
+				// 3. Select Fields
+					$('.skyscraper-data-field').click(function(event) {
+						event.stopPropagation();
+						var element = $(event.target);
+						console.log('FIELD:', event.target);
+						//element.parent().children().removeClass('selected');
+						element.addClass('skyscraper-selected');
+						if ($('#skyscraper-select-fields').html() === 'select') {
+							$('#skyscraper-select-fields').html('');
+						};
+						$('#skyscraper-select-fields').append(formatNiceName(element) + ', ');
+						var newField = {};
+						setSearchPatternProperties(element, newField);
+						searchPattern.fields.push(newField);
+						setInfoStep(4);
+					});
+
+				});
+
+
+			});
+
+			$('#skyscraper-start-button').click(function(event) {
+				Skyscraper.beginParsing();
+			});
+
+			$('#skyscraper-reset').click(function(event) {
+				Skyscraper.reset();
+			});
+
+			setInfoStep(1);
+			
+		};//init
+
+		base.reset = function() {
+			searchPattern = {
+				table: { tagName: null, id: null, classes: null },
+				rowTemplate: { tagName: null, id: null, classes: null },
+				fields: []
+			}
+			$('#skyscraper-select-table').html("select");
+			$('#skyscraper-select-row').html("select");
+			$('#skyscraper-select-fields').html("select");
+			$('#skyscraper-results').val('');
+			setInfoStep(1);
+		}
+
+		base.beginParsing = function() {
+
+			var resultStr = '';
+
+			var tableElement = smartFind($('body'), searchPattern.table);
+			//console.log('tableElement', tableElement);
+			if (tableElement !== null) {
+				var rowElements = smartFind(tableElement, searchPattern.rowTemplate, false)
+				console.log('rowElements', rowElements.length);
+				for (var r = 0; r < rowElements.length; r++) {
+					var rowElem = $(rowElements[r]);
+					console.log(rowElements[r]);
+					for (var f = 0; f < searchPattern.fields.length; f++) {
+						var fieldElements = smartFind(rowElem, searchPattern.fields[f], false)
+						console.log('fieldElements', fieldElements);
+						for (var fi = 0; fi < fieldElements.length; fi++) {
+							var textStr = $(fieldElements[fi]).text();
+							textStr.replace('\n', '\\');
+							resultStr += textStr + ';';
+						}
+					}
+					resultStr += '\n';
+				};
+			}
+			else {
+				resultStr = 'ERROR: Could not find table element.'
+			};
+
+
+			$('#skyscraper-results').val(resultStr);
+		};
+
+		base.init();
 	}
 
-	base.init();
-}
 }));
 
 
@@ -62,7 +223,7 @@ function extend(a, b){
 
 	function loadCSS(sheets) {
 // Synchronous loop for css files
-$.each(sheets, function(i, sheet){
+$.each(sheets, function(r, sheet){
 	$('<link>').attr({
 		href: (sheet + cachebuster), 
 		rel: 'stylesheet'

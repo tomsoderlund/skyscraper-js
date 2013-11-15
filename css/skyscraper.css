@@ -13,37 +13,83 @@ body {
 
 .skyscraper-info-box {
 	position: fixed;
+	z-index: 10000;
 	top: 0px;
 	right: 0px;
 	width: 200px;
 	min-height: 150px;
-	background-color: #DDD;
-	border: 1px solid #CCC;
+	background-color: hsla(0, 0%, 80%, 0.8);
 	padding: 10px;
+	font-size: 14px;
+	box-shadow: 2px 3px 2px hsla(0, 0%, 0%, 0.3);
 }
 
 .skyscraper-info-box .select-slot {
-  color: #999;
-  background: #DDD;
+  color: #222;
+  background: #CCC;
   border: 1px solid #999;
   border-radius: 8px;
-  padding: 2px;
+  padding: 4px;
   text-decoration: none;
-  font-size: 80%;
+  font-size: 70%;
 }
 
+.skyscraper-info-box li.active {
+	font-weight: bold;
+}
+
+.skyscraper-info-box button {
+	width: 100%;
+	padding: 10px;
+	border-radius: 8px;
+	background: #00bbff;
+	font-size: 1.2em;
+}
+
+.skyscraper-info-box textarea {
+	width: 100%;
+	border-radius: 8px;
+	font-size: 11px;
+	min-height: 100px;
+}
+
+/* ------------ */
+
 .skyscraper-data-table {
-	border: 5px solid #F00 !important;
+	cursor: pointer;
+	border: 5px solid #ffa67a !important;
 }
 
 .skyscraper-data-table:hover {
-	background: #DDD;
+	border-color: #ff5500 !important;
+}
+
+.skyscraper-data-table.skyscraper-selected {
+	border-color: #b33d00 !important;
 }
 
 .skyscraper-data-row {
+	cursor: pointer;
 	background-color: #ffeb7a !important;
 }
 
 .skyscraper-data-row:hover {
-	background-color: #d9c868 !important;
+	background-color: #ffd900 !important;
+}
+
+.skyscraper-data-row.skyscraper-selected {
+	background-color: #ffbb00 !important;
+}
+
+.skyscraper-data-field {
+	cursor: pointer;
+	background-color: #7adcff !important;
+}
+
+.skyscraper-data-field:hover {
+	background-color: #00bbff !important;
+}
+
+.skyscraper-data-field.skyscraper-selected {
+	background-color: #0082b3 !important;
 }
