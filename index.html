@@ -6,11 +6,11 @@
 <link rel="stylesheet" href="/css/skyscraper.css">
 <body>
 
-<h1>Skyscraper</h1>
+<h1>Skyscraper.JS</h1>
 
 <h2>Links</h2>
 
-<p>Drag and drop to your bookmarks bar:</p>
+<p>Drag and drop this to your bookmarks bar:</p>
 
  <!-- This implements a check to see if the Skyscraper has already been called, and if so, it simply re-runs the init function. You'll need to customize Skyscraper to the name of your object -->
 <p><a class="bookmarklet-button" href="javascript:if(!window.Skyscraper){(function(d,t){var timestamp=new Date(); var g=d.createElement(t),s=d.getElementsByTagName(t)[0]; g.src='http://localhost:8000/js/skyscraper.js?v=' + timestamp.getTime(); s.parentNode.insertBefore(g,s)}(document,'script'));}else{Skyscraper.init();}">Skyscraper</a></p>
@@ -54,12 +54,8 @@
 	</tbody>
 </table>
 
+<!-- Uncomment the line below if you DON'T want to auto-load Skyscraper.JS in this demo page: -->
 <script src="/js/skyscraper.js"></script>
-<script type="text/javascript">
-	
-	Skyscraper.init();
-
-</script>
 
 </body>
 </html>

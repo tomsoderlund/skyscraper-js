@@ -53,7 +53,7 @@ var Skyscraper = Skyscraper || (Skyscraper = new Bookmarklet({
 			if (useId && patternObject.id)
 				searchStr += '#' + patternObject.id;
 			//console.log('searchPattern:', searchPattern);
-			console.log('smartFind:', searchStr)
+			//console.log('smartFind:', searchStr)
 			return element.find(searchStr);
 		}
 
@@ -64,8 +64,8 @@ var Skyscraper = Skyscraper || (Skyscraper = new Bookmarklet({
 			$('body').append('<div class="skyscraper-info-box">'
 				+ '<h3>Skyscraper</h3>'
 				+ '<ol class="skyscraper-list">'
-				+ '<li id="step-1">Select a data table: <span class="select-slot" id="skyscraper-select-table">select</span></li>'
-				+ '<li id="step-2">Select a template data row: <span class="select-slot" id="skyscraper-select-row">select</span></li>'
+				+ '<li id="step-1">Select the data table: <span class="select-slot" id="skyscraper-select-table">select</span></li>'
+				+ '<li id="step-2">Select one data row: <span class="select-slot" id="skyscraper-select-row">select</span></li>'
 				+ '<li id="step-3">Select data fields: <span class="select-slot" id="skyscraper-select-fields">select</span></li>'
 				+ '<li id="step-4">Click below to begin parsing:</li>'
 				+ '</ol>'
@@ -159,6 +159,11 @@ var Skyscraper = Skyscraper || (Skyscraper = new Bookmarklet({
 			$('#skyscraper-select-row').html("select");
 			$('#skyscraper-select-fields').html("select");
 			$('#skyscraper-results').val('');
+			// strip CSS
+			//$('body').find('.skyscraper-data-table').removeClass('skyscraper-data-table');
+			$('body').find('.skyscraper-data-row').removeClass('skyscraper-data-row');
+			$('body').find('.skyscraper-data-field').removeClass('skyscraper-data-field');
+			$('body').find('.skyscraper-selected').removeClass('skyscraper-selected');
 			setInfoStep(1);
 		}
 
@@ -172,18 +177,27 @@ var Skyscraper = Skyscraper || (Skyscraper = new Bookmarklet({
 				var rowElements = smartFind(tableElement, searchPattern.rowTemplate, false)
 				console.log('rowElements', rowElements.length);
 				for (var r = 0; r < rowElements.length; r++) {
+					var rowTextStr = '';
 					var rowElem = $(rowElements[r]);
-					console.log(rowElements[r]);
-					for (var f = 0; f < searchPattern.fields.length; f++) {
-						var fieldElements = smartFind(rowElem, searchPattern.fields[f], false)
-						console.log('fieldElements', fieldElements);
-						for (var fi = 0; fi < fieldElements.length; fi++) {
-							var textStr = $(fieldElements[fi]).text();
-							textStr.replace('\n', '\\');
-							resultStr += textStr + ';';
+					//console.log(rowElements[r]);
+					if (searchPattern.fields.length === 0) {
+						// List
+						rowTextStr = rowElem.text() + ';';
+					}
+					else {
+						// Multi-field table
+						for (var f = 0; f < searchPattern.fields.length; f++) {
+							var fieldElements = smartFind(rowElem, searchPattern.fields[f], false)
+							console.log('fieldElements', fieldElements.length);
+							for (var fi = 0; fi < fieldElements.length; fi++) {
+								rowTextStr += $(fieldElements[fi]).text() + ';';
+							}
 						}
 					}
-					resultStr += '\n';
+					rowTextStr.replace('\n', '\\');
+					rowTextStr.replace('\r', '\\');
+					console.log('rowTextStr', rowTextStr);
+					resultStr += 'ROW;' + (r+1) + ';' + rowTextStr + '\n';
 				};
 			}
 			else {
