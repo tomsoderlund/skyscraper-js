@@ -1,0 +1,49 @@
+body {
+	font-family: sans-serif;
+}
+
+.bookmarklet-button {
+  color: #999;
+  background: #DDD;
+  border: 3px solid #999;
+  border-radius: 8px;
+  padding: 10px;
+  text-decoration: none;
+}
+
+.skyscraper-info-box {
+	position: fixed;
+	top: 0px;
+	right: 0px;
+	width: 200px;
+	min-height: 150px;
+	background-color: #DDD;
+	border: 1px solid #CCC;
+	padding: 10px;
+}
+
+.skyscraper-info-box .select-slot {
+  color: #999;
+  background: #DDD;
+  border: 1px solid #999;
+  border-radius: 8px;
+  padding: 2px;
+  text-decoration: none;
+  font-size: 80%;
+}
+
+.skyscraper-data-table {
+	border: 5px solid #F00 !important;
+}
+
+.skyscraper-data-table:hover {
+	background: #DDD;
+}
+
+.skyscraper-data-row {
+	background-color: #ffeb7a !important;
+}
+
+.skyscraper-data-row:hover {
+	background-color: #d9c868 !important;
+}

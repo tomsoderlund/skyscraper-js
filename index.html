@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Skyscraper.JS Demo</title>
+</head>
+<link rel="stylesheet" href="/css/skyscraper.css">
+<body>
+
+<h1>Skyscraper</h1>
+
+<h2>Links</h2>
+
+<p>Drag and drop to your bookmarks bar:</p>
+
+ <!-- This implements a check to see if the Skyscraper has already been called, and if so, it simply re-runs the init function. You'll need to customize Skyscraper to the name of your object -->
+<p><a class="bookmarklet-button" href="javascript:if(!window.Skyscraper){(function(d,t){var timestamp=new Date(); var g=d.createElement(t),s=d.getElementsByTagName(t)[0]; g.src='http://localhost:8000/js/skyscraper.js?v=' + timestamp.getTime(); s.parentNode.insertBefore(g,s)}(document,'script'));}else{Skyscraper.init();}">Skyscraper</a></p>
+
+<p>(currently hardcoded to http://localhost:8000 - change this in the link above if needed)</p>
+
+<h2>Sandbox</h2>
+
+<h3>List</h3>
+
+<ul id="my-unsorted-list">
+	<li>Alpha</li>
+	<li>Beta</li>
+	<li>Gamma</li>
+</ul>
+
+<h3>Table</h3>
+
+<table id="my-table">
+	<caption>table title and/or explanatory text</caption>
+	<thead>
+		<tr>
+			<th>header</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>data</td>
+		</tr>
+	</tbody>
+</table>
+
+</body>
+</html>
