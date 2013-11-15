@@ -2,7 +2,7 @@
 
 var Skyscraper = Skyscraper || (Skyscraper = new Bookmarklet({
 	// debug: true, // use debug to bust the cache on your resources
-	css: ['http://localhost:8000' + '/css/skyscraper.css'],
+	css: ['http://tomsoderlund.github.io/skyscraper-js' + '/css/skyscraper.css'],
 	js: [],
 	// jqpath: '/my/jquery.js', // defaults to google cdn-hosted jquery
 	ready: function (base) { // use base to expose a public method
