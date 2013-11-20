@@ -86,6 +86,10 @@ var Skyscraper = Skyscraper || (Skyscraper = new Bookmarklet({
 				element.addClass('skyscraper-selected');
 				element.find('.skyscraper-data-table').off('click');
 				element.find('.skyscraper-data-table').removeClass('skyscraper-data-table');
+				// Remove links
+				element.find('*').click(function(e) {
+					e.preventDefault();
+				});
 				element.children('li').addClass('skyscraper-data-row');
 				element.children('tr').addClass('skyscraper-data-row');
 				element.children('tbody').children('tr').addClass('skyscraper-data-row');
